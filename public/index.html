@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerForge Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* Global Reset & Typography */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; display: flex; height: 100vh; overflow: hidden; }
+
+        /* Two-Column Studio Layout */
+        .sidebar { width: 400px; background-color: #ffffff; border-right: 1px solid #e2e8f0; padding: 30px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; z-index: 10; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .preview-area { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; background-color: #f1f5f9; }
+
+        /* Brand Header */
+        .brand { margin-bottom: 30px; }
+        .brand h1 { font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; }
+        .brand p { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        .optional-tag { font-weight: 400; color: #94a3b8; font-size: 11px; margin-left: 4px; }
+        
+        input, select, textarea { width: 100%; padding: 12px; font-size: 14px; font-family: 'Inter', sans-serif; border: 1px solid #cbd5e1; border-radius: 8px; background-color: #f8fafc; transition: all 0.2s ease; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #6366f1; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        textarea { resize: vertical; min-height: 100px; }
+
+        /* Primary Button */
+        button.primary-btn { background-color: #0f172a; color: #ffffff; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; width: 100%; margin-top: 10px; }
+        button.primary-btn:hover:not(:disabled) { background-color: #1e293b; transform: translateY(-1px); }
+        button.primary-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        /* The "Paper" Preview Box */
+        .document-wrapper { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 20px; }
+        .result-box { background: #ffffff; padding: 60px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.05); min-height: 800px; font-size: 15px; line-height: 1.7; color: #1e293b; display: none; }
+        .result-box h1, .result-box h2, .result-box h3 { color: #0f172a; margin-top: 1.5em; margin-bottom: 0.5em; }
+        .result-box p, .result-box ul { margin-bottom: 1.2em; }
+        .result-box ul { padding-left: 20px; }
+
+        /* Modern Loading State */
+        .loading-container { display: none; text-align: center; margin-top: 40px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: #64748b; font-size: 14px; font-weight: 500; }
+
+        /* Download Button */
+        .action-bar { display: flex; justify-content: flex-end; width: 100%; }
+        button.secondary-btn { background-color: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; display: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        button.secondary-btn:hover { background-color: #f8fafc; border-color: #94a3b8; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 900px) {
+            body { flex-direction: column; overflow: auto; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .preview-area { padding: 20px; }
+            .result-box { padding: 30px; min-height: 500px; }
+        }
+
+        /* Perfect Print Settings */
+        @media print {
+            body * { visibility: hidden; background: white; }
+            .result-box, .result-box * { visibility: visible; }
+            .result-box { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; border: none; box-shadow: none; padding: 0; margin: 0; min-height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <h1>CareerForge Pro</h1>
+            <p>Tailored documents, powered by AI.</p>
+        </div>
+
+        <div class="form-group">
+            <label for="jobTitle">Job Title</label>
+            <input type="text" id="jobTitle" placeholder="e.g., Senior Product Manager" required>
+        </div>
+
+        <div class="form-group">
+            <label for="outputType">Document Type</label>
+            <select id="outputType">
+                <option value="cover letter">Cover Letter</option>
+                <option value="resume summary">Resume Summary</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="tone">Writing Tone</label>
+            <select id="tone">
+                <option value="highly professional, formal, and traditional">Professional & Traditional</option>
+                <option value="bold, highly confident, and persuasive">Bold & Confident</option>
+                <option value="creative, conversational, and engaging">Creative & Conversational</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="jobDescription">Job Description <span class="optional-tag">(Optional)</span></label>
+            <textarea id="jobDescription" placeholder="Paste the exact job posting here for a perfect match..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="experience">Your Experience <span class="optional-tag">(Optional)</span></label>
+            <textarea id="experience" placeholder="Paste your resume bullet points or key skills..."></textarea>
+        </div>
+
+        <button id="generateBtn" class="primary-btn" onclick="generateContent()">Generate Document</button>
+    </aside>
+
+    <main class="preview-area">
+        
+        <div id="loadingMessage" class="loading-container">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing profile and crafting document...</div>
+        </div>
+
+        <div class="document-wrapper">
+            <div class="action-bar">
+                <button id="downloadBtn" class="secondary-btn" onclick="window.print()">
+                    <svg style="width:16px; height:16px; vertical-align:middle; margin-right:5px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Save as PDF
+                </button>
+            </div>
+            <div id="resultBox" class="result-box"></div>
+        </div>
+
+    </main>
+
+<script>
+    async function generateContent() {
+        const jobTitle = document.getElementById('jobTitle').value;
+        const jobDescription = document.getElementById('jobDescription').value;
+        const experience = document.getElementById('experience').value;
+        const outputType = document.getElementById('outputType').value;
+        const tone = document.getElementById('tone').value;
+        
+        const resultBox = document.getElementById('resultBox');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        if (!jobTitle) {
+            // Modern pulse effect for error instead of ugly browser alert
+            const titleInput = document.getElementById('jobTitle');
+            titleInput.style.borderColor = '#ef4444';
+            setTimeout(() => titleInput.style.borderColor = '#cbd5e1', 1500);
+            return;
+        }
+
+        // Prepare the UI
+        loadingMessage.style.display = "block";
+        resultBox.style.display = "block"; 
+        resultBox.innerHTML = ""; 
+        generateBtn.disabled = true;
+        generateBtn.innerText = "Generating...";
+        downloadBtn.style.display = "none"; 
+
+        try {
+                const response = await fetch('/generate', {                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ jobTitle, outputType, jobDescription, experience, tone })
+            });
+
+            loadingMessage.style.display = "none";
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let fullText = ""; 
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break; 
+                
+                const textChunk = decoder.decode(value, { stream: true });
+                fullText += textChunk; 
+                resultBox.innerHTML = marked.parse(fullText); 
+            }
+
+            // Document finished! Show download button and reset main button
+            downloadBtn.style.display = "inline-flex";
+            downloadBtn.style.alignItems = "center";
+            generateBtn.innerText = "Generate Another";
+
+        } catch (error) {
+            loadingMessage.style.display = "none";
+            resultBox.innerHTML = "<p style='color:#ef4444; font-weight: 500;'>Connection Error: Please ensure your local server is running.</p>";
+        } finally {
+            generateBtn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
