@@ -8,53 +8,69 @@ const port = 3000;
 
 app.use(express.json());
 app.use(cors());
-
 app.use(express.static('public'));
 
-// Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.post('/generate', async (req, res) => {
     try {
-        const { jobTitle, outputType, jobDescription, experience, tone } = req.body;
+        // Extract all the new specific resume fields
+        const { fullName, email, phone, location, targetJob, jobDescription, company, dates, experience, skills, education, tone } = req.body;
 
-        if (!jobTitle) {
-            return res.status(400).json({ error: "Job title is required." });
+        if (!fullName || !targetJob) {
+            return res.status(400).json({ error: "Name and Target Job are required." });
         }
 
-        // Build the dynamic prompt based on user inputs
-        let promptText = `Act as an expert career coach and professional copywriter. Write a customized ${outputType} for a candidate applying for a ${jobTitle} position.\n\n`;
+        // Build a highly specific ATS Prompt
+        let promptText = `You are an expert executive resume writer and ATS (Applicant Tracking System) optimizer. 
+        Your task is to write a complete, perfectly formatted single-page resume for this candidate.
+        
+        Use the following information to build the resume:
+        - Target Job Title: ${targetJob}
+        - Full Name: ${fullName}
+        - Contact Info: ${email} | ${phone} | ${location}
+        - Education: ${education}
+        - Core Skills: ${skills}
+        
+        Job History Context:
+        Company: ${company} (${dates})
+        Raw Experience Notes: ${experience}
+        
+        Job Description they are applying for (Tailor the resume to this):
+        ${jobDescription || "Standard industry duties for this role."}
+        
+        STRICT FORMATTING INSTRUCTIONS:
+        You must format the response entirely in Markdown using this exact structure:
+        
+        # ${fullName}
+        ${email} | ${phone} | ${location}
+        
+        ## PROFESSIONAL SUMMARY
+        (Write a powerful, 3-sentence summary tailored to the target job, highlighting their top skills and value proposition. Tone: ${tone})
+        
+        ## PROFESSIONAL EXPERIENCE
+        ### ${targetJob} | ${company}
+        *${dates}*
+        (Transform the raw experience notes into 4-5 highly professional, impact-driven bullet points. Start each bullet with a strong action verb. Incorporate keywords from the job description if provided. Focus on achievements rather than just duties.)
+        
+        ## EDUCATION
+        ${education}
+        
+        ## CORE COMPETENCIES
+        (Format their skills into a clean, comma-separated list optimized for ATS keyword scanning based on the target job).
+        
+        Do NOT add any conversational intro or outro text. Output ONLY the resume text.`;
 
-        if (experience) {
-            promptText += `Here is the candidate's current experience and skills:\n"${experience}"\n\n`;
-        }
-
-        if (jobDescription) {
-            promptText += `Here is the job description they are applying for:\n"${jobDescription}"\n\n`;
-        }
-
-        promptText += `Instructions:
-        - Weave the candidate's experience naturally into the requirements of the job description.
-        - Do not hallucinate or invent fake experiences. 
-        - The tone of the writing MUST be ${tone}.
-        - Format it cleanly using Markdown (use headers, bullet points, and bold text where appropriate).`;
-
-        // Tell the browser to expect a stream of text data
         res.setHeader('Content-Type', 'text/plain');
         res.setHeader('Transfer-Encoding', 'chunked');
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        
-        // Request the stream from Gemini
         const result = await model.generateContentStream(promptText);
 
-        // Send each chunk to the frontend as soon as it arrives
         for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            res.write(chunkText); 
+            res.write(chunk.text()); 
         }
 
-        // Close the connection when done
         res.end();
 
     } catch (error) {
@@ -68,5 +84,5 @@ app.post('/generate', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`🚀 Pro Streaming Server is running on port ${port}!`);
+    console.log(`🚀 V2 ATS Resume Server is running on port ${port}!`);
 });

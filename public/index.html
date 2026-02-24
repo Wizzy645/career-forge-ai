@@ -3,69 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareerForge Pro</title>
+    <title>CareerForge Pro - ATS Resume Builder</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        /* Global Reset & Typography */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; display: flex; height: 100vh; overflow: hidden; }
-
-        /* Two-Column Studio Layout */
-        .sidebar { width: 400px; background-color: #ffffff; border-right: 1px solid #e2e8f0; padding: 30px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; z-index: 10; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar { width: 450px; background-color: #ffffff; border-right: 1px solid #e2e8f0; padding: 30px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; z-index: 10; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
         .preview-area { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; background-color: #f1f5f9; }
-
-        /* Brand Header */
-        .brand { margin-bottom: 30px; }
+        .brand { margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
         .brand h1 { font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; }
-        .brand p { font-size: 13px; color: #64748b; margin-top: 4px; }
-
-        /* Form Elements */
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-        .optional-tag { font-weight: 400; color: #94a3b8; font-size: 11px; margin-left: 4px; }
-        
-        input, select, textarea { width: 100%; padding: 12px; font-size: 14px; font-family: 'Inter', sans-serif; border: 1px solid #cbd5e1; border-radius: 8px; background-color: #f8fafc; transition: all 0.2s ease; outline: none; }
+        .brand p { font-size: 13px; color: #64748b; margin-top: 6px; }
+        .section-title { font-size: 14px; font-weight: 700; color: #0f172a; margin: 20px 0 10px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .form-group { flex: 1; margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        input, select, textarea { width: 100%; padding: 10px; font-size: 13px; font-family: 'Inter', sans-serif; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f8fafc; transition: all 0.2s; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: #6366f1; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
-        textarea { resize: vertical; min-height: 100px; }
+        textarea { resize: vertical; min-height: 80px; }
 
-        /* Primary Button */
-        button.primary-btn { background-color: #0f172a; color: #ffffff; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; width: 100%; margin-top: 10px; }
+        button.primary-btn { background-color: #0f172a; color: #ffffff; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; }
         button.primary-btn:hover:not(:disabled) { background-color: #1e293b; transform: translateY(-1px); }
         button.primary-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
 
-        /* The "Paper" Preview Box */
-        .document-wrapper { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 20px; }
-        .result-box { background: #ffffff; padding: 60px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.05); min-height: 800px; font-size: 15px; line-height: 1.7; color: #1e293b; display: none; }
-        .result-box h1, .result-box h2, .result-box h3 { color: #0f172a; margin-top: 1.5em; margin-bottom: 0.5em; }
-        .result-box p, .result-box ul { margin-bottom: 1.2em; }
-        .result-box ul { padding-left: 20px; }
+        .document-wrapper { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 20px; }
+        .result-box { background: #ffffff; padding: 60px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); min-height: 800px; font-size: 14px; line-height: 1.6; color: #1e293b; display: none; }
+        
+        /* ATS Formatting for the Output */
+        .result-box h1 { text-align: center; font-size: 24px; margin-bottom: 5px; color: #000; }
+        .result-box h2 { border-bottom: 1px solid #000; font-size: 16px; text-transform: uppercase; margin-top: 20px; margin-bottom: 10px; padding-bottom: 3px; color: #000; }
+        .result-box h3 { font-size: 14px; margin-top: 10px; margin-bottom: 5px; color: #222; }
+        .result-box p { margin-bottom: 10px; text-align: justify; }
+        .result-box ul { padding-left: 20px; margin-bottom: 15px; }
+        .result-box li { margin-bottom: 5px; }
 
-        /* Modern Loading State */
         .loading-container { display: none; text-align: center; margin-top: 40px; }
         .spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { color: #64748b; font-size: 14px; font-weight: 500; }
 
-        /* Download Button */
         .action-bar { display: flex; justify-content: flex-end; width: 100%; }
-        button.secondary-btn { background-color: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; display: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        button.secondary-btn:hover { background-color: #f8fafc; border-color: #94a3b8; }
+        button.secondary-btn { background-color: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; display: none; }
+        button.secondary-btn:hover { background-color: #f8fafc; }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 900px) {
-            body { flex-direction: column; overflow: auto; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .preview-area { padding: 20px; }
-            .result-box { padding: 30px; min-height: 500px; }
-        }
-
-        /* Perfect Print Settings */
         @media print {
             body * { visibility: hidden; background: white; }
             .result-box, .result-box * { visibility: visible; }
-            .result-box { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; border: none; box-shadow: none; padding: 0; margin: 0; min-height: auto; }
+            .result-box { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; border: none; box-shadow: none; padding: 0; margin: 0; }
         }
     </style>
 </head>
@@ -73,101 +58,122 @@
 
     <aside class="sidebar">
         <div class="brand">
-            <h1>CareerForge Pro</h1>
-            <p>Tailored documents, powered by AI.</p>
+            <div class="logo-container">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <path d="M10 9H8"></path>
+                </svg>
+                <h1>CareerForge</h1>
+            </div>
+            <p>ATS-Optimized Resume Builder</p>
         </div>
 
+        <div class="section-title">1. Personal Details</div>
         <div class="form-group">
-            <label for="jobTitle">Job Title</label>
-            <input type="text" id="jobTitle" placeholder="e.g., Senior Product Manager" required>
+            <input type="text" id="fullName" placeholder="Full Name (e.g., John Doe)" required>
+        </div>
+        <div class="form-row">
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
+        </div>
+        <div class="form-group">
+            <input type="text" id="location" placeholder="Location (e.g., Lagos, Nigeria) & LinkedIn URL">
         </div>
 
+        <div class="section-title">2. Target Role</div>
         <div class="form-group">
-            <label for="outputType">Document Type</label>
-            <select id="outputType">
-                <option value="cover letter">Cover Letter</option>
-                <option value="resume summary">Resume Summary</option>
-            </select>
+            <input type="text" id="targetJob" placeholder="Target Job Title" required>
+        </div>
+        <div class="form-group">
+            <textarea id="jobDescription" placeholder="Paste the Job Description here (AI will tailor your resume to this!)"></textarea>
         </div>
 
+        <div class="section-title">3. Experience & Skills</div>
+        <div class="form-row">
+            <input type="text" id="company" placeholder="Current/Past Company">
+            <input type="text" id="dates" placeholder="Dates (e.g., Jan 2021 - Present)">
+        </div>
         <div class="form-group">
-            <label for="tone">Writing Tone</label>
+            <textarea id="experience" placeholder="Rough notes on what you did there... (AI will turn this into pro bullet points)"></textarea>
+        </div>
+        <div class="form-group">
+            <textarea id="skills" placeholder="List your hard skills (e.g., JavaScript, Python, React, Project Management)"></textarea>
+        </div>
+
+        <div class="section-title">4. Education</div>
+        <div class="form-group">
+            <input type="text" id="education" placeholder="e.g., B.Sc Computer Science, University of Lagos, 2023">
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Writing Tone</label>
             <select id="tone">
-                <option value="highly professional, formal, and traditional">Professional & Traditional</option>
+                <option value="highly professional, metric-driven, and formal">Professional & Metric-Driven</option>
                 <option value="bold, highly confident, and persuasive">Bold & Confident</option>
-                <option value="creative, conversational, and engaging">Creative & Conversational</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label for="jobDescription">Job Description <span class="optional-tag">(Optional)</span></label>
-            <textarea id="jobDescription" placeholder="Paste the exact job posting here for a perfect match..."></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="experience">Your Experience <span class="optional-tag">(Optional)</span></label>
-            <textarea id="experience" placeholder="Paste your resume bullet points or key skills..."></textarea>
-        </div>
-
-        <button id="generateBtn" class="primary-btn" onclick="generateContent()">Generate Document</button>
+        <button id="generateBtn" class="primary-btn" onclick="generateContent()">Generate ATS Resume</button>
     </aside>
 
     <main class="preview-area">
-        
         <div id="loadingMessage" class="loading-container">
             <div class="spinner"></div>
-            <div class="loading-text">Analyzing profile and crafting document...</div>
+            <div>Structuring ATS Resume...</div>
         </div>
-
         <div class="document-wrapper">
             <div class="action-bar">
-                <button id="downloadBtn" class="secondary-btn" onclick="window.print()">
-                    <svg style="width:16px; height:16px; vertical-align:middle; margin-right:5px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Save as PDF
-                </button>
+                <button id="downloadBtn" class="secondary-btn" onclick="window.print()">🖨️ Save as PDF</button>
             </div>
             <div id="resultBox" class="result-box"></div>
         </div>
-
     </main>
 
 <script>
     async function generateContent() {
-        const jobTitle = document.getElementById('jobTitle').value;
-        const jobDescription = document.getElementById('jobDescription').value;
-        const experience = document.getElementById('experience').value;
-        const outputType = document.getElementById('outputType').value;
-        const tone = document.getElementById('tone').value;
-        
+        // Collect ALL new data
+        const payload = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            location: document.getElementById('location').value,
+            targetJob: document.getElementById('targetJob').value,
+            jobDescription: document.getElementById('jobDescription').value,
+            company: document.getElementById('company').value,
+            dates: document.getElementById('dates').value,
+            experience: document.getElementById('experience').value,
+            skills: document.getElementById('skills').value,
+            education: document.getElementById('education').value,
+            tone: document.getElementById('tone').value
+        };
+
+        if (!payload.fullName || !payload.targetJob) {
+            alert("Name and Target Job are required!");
+            return;
+        }
+
         const resultBox = document.getElementById('resultBox');
         const loadingMessage = document.getElementById('loadingMessage');
         const generateBtn = document.getElementById('generateBtn');
         const downloadBtn = document.getElementById('downloadBtn');
 
-        if (!jobTitle) {
-            // Modern pulse effect for error instead of ugly browser alert
-            const titleInput = document.getElementById('jobTitle');
-            titleInput.style.borderColor = '#ef4444';
-            setTimeout(() => titleInput.style.borderColor = '#cbd5e1', 1500);
-            return;
-        }
-
-        // Prepare the UI
         loadingMessage.style.display = "block";
         resultBox.style.display = "block"; 
         resultBox.innerHTML = ""; 
         generateBtn.disabled = true;
-        generateBtn.innerText = "Generating...";
         downloadBtn.style.display = "none"; 
 
         try {
-                const response = await fetch('/generate', {                method: 'POST',
+            const response = await fetch('/generate', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ jobTitle, outputType, jobDescription, experience, tone })
+                body: JSON.stringify(payload)
             });
 
             loadingMessage.style.display = "none";
-
             const reader = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
             let fullText = ""; 
@@ -175,25 +181,18 @@
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break; 
-                
-                const textChunk = decoder.decode(value, { stream: true });
-                fullText += textChunk; 
+                fullText += decoder.decode(value, { stream: true });
                 resultBox.innerHTML = marked.parse(fullText); 
             }
 
-            // Document finished! Show download button and reset main button
-            downloadBtn.style.display = "inline-flex";
-            downloadBtn.style.alignItems = "center";
-            generateBtn.innerText = "Generate Another";
-
+            downloadBtn.style.display = "block";
         } catch (error) {
             loadingMessage.style.display = "none";
-            resultBox.innerHTML = "<p style='color:#ef4444; font-weight: 500;'>Connection Error: Please ensure your local server is running.</p>";
+            resultBox.innerHTML = "<p style='color:red;'>Error connecting to server.</p>";
         } finally {
             generateBtn.disabled = false;
         }
     }
 </script>
-
 </body>
 </html>
