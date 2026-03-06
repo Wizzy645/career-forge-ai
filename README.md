@@ -26,7 +26,7 @@ If you want to run this application locally on your own machine, follow these st
 Clone the repository:
 
 Bash
-git clone https://github.com/your-username/career-forge-ai.git
+git clone https://github.com/Wizzy645/career-forge-ai.git
 cd career-forge-ai
 Install dependencies:
 
