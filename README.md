@@ -1,4 +1,4 @@
-CareerForge Pro 🚀 | ATS-Optimized AI Resume Builder
+CareerForge Pro  | ATS-Optimized AI Resume Builder
 Project Description
 CareerForge Pro is a full-stack, AI-powered document generator designed to solve the problem of generic, poorly formatted AI resumes. While standard AI chatbots output raw text that users must manually format, CareerForge acts as a complete Applicant Tracking System (ATS) resume builder.
 
